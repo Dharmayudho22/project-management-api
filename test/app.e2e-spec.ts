@@ -1,18 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import request from 'supertest';
+import request, { Response } from 'supertest';
 import { AppModule } from '../src/app.module';
 
-interface RegisterResponse {
-  userId: number;
-}
-
-interface LoginResponse {
-  access_token: string;
-}
-
-describe('Auth E2E', () => {
+describe('Project Management E2E', () => {
   let app: INestApplication;
+  let token: string;
+  let projectId: number;
+
+  const email = `e2e_${Date.now()}@test.com`;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -24,31 +20,56 @@ describe('Auth E2E', () => {
   });
 
   it('should register user', async () => {
-    const response = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post('/auth/register')
       .send({
-        email: 'e2e@test.com',
+        email,
         password: '123456',
-      });
-
-    expect(response.status).toBe(201);
-
-    const body = response.body as RegisterResponse;
-    expect(body.userId).toBeDefined();
+      })
+      .expect(201);
   });
 
   it('should login and return JWT token', async () => {
-    const response = await request(app.getHttpServer())
+    const response: Response = await request(app.getHttpServer())
       .post('/auth/login')
       .send({
-        email: 'e2e@test.com',
+        email,
         password: '123456',
-      });
+      })
+      .expect(201);
 
-    expect(response.status).toBe(201);
+    const body = response.body as { access_token: string };
+    token = body.access_token;
 
-    const body = response.body as LoginResponse;
-    expect(body.access_token).toBeDefined();
+    expect(token).toBeDefined();
+  });
+
+  it('should reject access to protected route without token', async () => {
+    await request(app.getHttpServer()).get('/projects').expect(401);
+  });
+
+  it('should create project with token', async () => {
+    const response: Response = await request(app.getHttpServer())
+      .post('/projects')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'E2E Project' })
+      .expect(201);
+
+    const body = response.body as { id: number };
+    projectId = body.id;
+
+    expect(projectId).toBeDefined();
+  });
+
+  it('should create task under project', async () => {
+    await request(app.getHttpServer())
+      .post('/tasks')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        projectId,
+        title: 'E2E Task',
+      })
+      .expect(201);
   });
 
   afterAll(async () => {
