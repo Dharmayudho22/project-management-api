@@ -7,6 +7,7 @@ describe('Project Management E2E', () => {
   let app: INestApplication;
   let token: string;
   let projectId: number;
+  let taskId: number;
 
   const email = `e2e_${Date.now()}@test.com`;
 
@@ -62,7 +63,7 @@ describe('Project Management E2E', () => {
   });
 
   it('should create task under project', async () => {
-    await request(app.getHttpServer())
+    const response: Response = await request(app.getHttpServer())
       .post('/tasks')
       .set('Authorization', `Bearer ${token}`)
       .send({
@@ -70,6 +71,41 @@ describe('Project Management E2E', () => {
         title: 'E2E Task',
       })
       .expect(201);
+
+    const body = response.body as { id: number };
+    taskId = body.id;
+
+    expect(taskId).toBeDefined();
+  });
+
+  it('should update task', async () => {
+    const response: Response = await request(app.getHttpServer())
+      .patch(`/tasks/${taskId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        title: 'Updated Task Title',
+      })
+      .expect(200);
+
+    const body = response.body as { title: string };
+    expect(body.title).toBe('Updated Task Title');
+  });
+
+  it('should get tasks by project', async () => {
+    const response: Response = await request(app.getHttpServer())
+      .get(`/tasks/project/${projectId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
+
+    const body = response.body as Array<{ id: number }>;
+    expect(Array.isArray(body)).toBe(true);
+  });
+
+  it('should delete task', async () => {
+    await request(app.getHttpServer())
+      .delete(`/tasks/${taskId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
   });
 
   afterAll(async () => {
