@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto/auth.dto';
 
@@ -18,7 +18,10 @@ export class AuthController {
   }
 
   @Post('login')
-  login(@Body() dto: AuthDto): Promise<{ access_token: string }> {
+  login(@Body() dto: AuthDto) {
+    if (!dto) {
+      throw new BadRequestException('Invalid request body');
+    }
     return this.authService.login(dto.email, dto.password);
   }
 }
