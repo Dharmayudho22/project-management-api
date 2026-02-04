@@ -5,6 +5,7 @@ import {
   Delete,
   Body,
   Param,
+  Patch,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -12,6 +13,7 @@ import { TasksService } from './tasks.service';
 import { Request } from 'express';
 import { GetUser } from '../common/decorators/get-user.decorator';
 import { JwtUser } from '../common/types/jwt-user.type';
+import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Controller('tasks')
 @UseGuards(AuthGuard('jwt'))
@@ -37,5 +39,14 @@ export class TasksController {
   @Delete(':taskId')
   remove(@GetUser() user: JwtUser, @Param('taskId') taskId: string) {
     return this.tasksService.remove(user.userId, Number(taskId));
+  }
+
+  @Patch(':taskId')
+  update(
+    @Param('taskId') taskId: string,
+    @GetUser() user: JwtUser,
+    @Body() dto: UpdateTaskDto,
+  ) {
+    return this.tasksService.update(user.userId, Number(taskId), dto);
   }
 }

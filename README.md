@@ -88,6 +88,8 @@ Get Tasks by Project
 
 Delete Task
 
+Pacth Task
+
 
 To use:
 

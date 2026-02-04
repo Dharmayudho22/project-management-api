@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "4a8dc949-e3ac-44e1-8bc8-6c111e86e49a",
     "name": "project-management-api",
-    "description": "The collection is organized into folders:\n\n- Auth\n    \n    - Register\n        \n    - Login\n        \n- Projects\n    \n    - Create Project\n        \n    - Get Projects\n        \n    - Delete Project\n        \n- Tasks\n    \n    - Create Task\n        \n    - Get Tasks by Project\n        \n    - Delete Task",
+    "description": "The collection is organized into folders:\n\n- Auth\n    \n    - Register\n        \n    - Login\n        \n- Projects\n    \n    - Create Project\n        \n    - Get Projects\n        \n    - Delete Project\n        \n- Tasks\n    \n    - Create Tasks\n        \n    - Get Tasks by Project\n        \n    - Delete Tasks\n        \n    - Patch Tasks",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "23531234"
   },
@@ -294,6 +294,40 @@
               "path": [
                 "tasks",
                 "5"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Patch Tasks",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QyQGdtYWlsLmNvbSIsInN1YiI6MTAsImlhdCI6MTc3MDE5NjE2MywiZXhwIjoxNzcwMTk5NzYzfQ.5PDwc5SPwLdyzW0XalNaeW4i0C3yC_hruYKgEO0dWTg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"Task di update\"\r\n}\r\n"
+            },
+            "url": {
+              "raw": "http://localhost:3000/tasks/6",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "tasks",
+                "6"
               ]
             }
           },
